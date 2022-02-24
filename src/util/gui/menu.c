@@ -234,7 +234,10 @@ static void GUIMenuDraw(struct GUIParams* params, const struct GUIMenu* menu, co
 		const struct GUIMenuItem* item = GUIMenuItemListGetConstPointer(&menu->items, i);
 		if (i == menu->index) {
 			color = item->readonly ? 0xD0909090 : 0xFFFFFFFF;
-			GUIFontDrawIcon(params->font, lineHeight * 0.8f, y, GUI_ALIGN_BOTTOM | GUI_ALIGN_RIGHT, GUI_ORIENT_0, color, GUI_ICON_POINTER);
+			// upd xjsxjs197 start
+			//GUIFontDrawIcon(params->font, lineHeight * 0.8f, y, GUI_ALIGN_BOTTOM | GUI_ALIGN_RIGHT, GUI_ORIENT_0, color, GUI_ICON_POINTER);
+			GUIFontDrawIcon(params->font, lineHeight * 0.8f, y + 7, GUI_ALIGN_RIGHT, GUI_ORIENT_0, 0xFFFFFFFF, GUI_ICON_POINTER);
+			// upd xjsxjs197 end
 		}
 		GUIFontPrint(params->font, item->readonly ? lineHeight * 3 / 2 : lineHeight, y, GUI_ALIGN_LEFT, color, item->title);
 		if (item->validStates && item->validStates[item->state]) {

@@ -1,0 +1,307 @@
+#Makefile mGba
+
+#---------------------------------------------------------------------------------
+# Clear the implicit built in rules
+#---------------------------------------------------------------------------------
+.SUFFIXES:
+#---------------------------------------------------------------------------------
+ifeq ($(strip $(DEVKITPPC)),)
+$(error "Please set DEVKITPPC in your environment. export DEVKITPPC=<path to>devkitPPC")
+endif
+
+include $(DEVKITPPC)/wii_rules
+
+ELF    = mGba.elf
+DOL    = mGba.dol
+ALL_OBJ = 
+
+#---------------------------------------------------------------------------------
+# options for code generation
+#---------------------------------------------------------------------------------
+CFLAGS = -g -O2 -mrvl $(MACHDEP) $(INCLUDE) $(DEFS) -w -Wextra -std=c99 \
+        -DM_CORE_GBA -DM_CORE_GB -DCOLOR_16_BIT -DCOLOR_5_6_5 -DUSE_VFS_FILE \
+        -DRESAMPLE_LIBRARY=RESAMPLE_BLIP_BUF \
+		-D__ATOMIC_RELEASE -D__ATOMIC_ACQUIRE -fasm -DUSE_PNG -DHAVE_LOCALTIME_R \
+		-DUSE_LZMA -DUSE_ZLIB -DNOCRYPT -DIOAPI_NO_64 -DMGBA_STANDALONE -DHAVE_STRTOF_L
+
+CXXFLAGS	=	$(CFLAGS)
+
+LDFLAGS = -g $(MACHDEP) -mrvl -Wl,-Map,$(notdir $@).map -s
+
+#---------------------------------------------------------------------------------
+# any extra libraries we wish to link with the project
+#---------------------------------------------------------------------------------
+LIBS := -lpng -ldi -lfat -liso9660 -lasnd -lwiiuse -lbte -logc -lm -lz \
+        -lmxml -lwupc -lvorbisidec -lfreetype -ltinysmb
+
+#---------------------------------------------------------------------------------
+# list of directories containing libraries, this must be the top level containing
+# include and lib
+#---------------------------------------------------------------------------------
+LIBDIRS	:= $(PORTLIBS)
+
+#---------------------------------------------------------------------------------
+# INCLUDES is a list of directories containing extra header files
+#---------------------------------------------------------------------------------
+INCLUDES	:=  include \
+                src  \
+				src/util/guiGx \
+                src/arm
+                
+#---------------------------------------------------------------------------------
+# build a list of include paths
+#---------------------------------------------------------------------------------
+export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
+			        $(foreach dir,$(LIBDIRS),-I$(dir)/include) \
+			        -I$(CURDIR)/$(BUILD) \
+			        -I$(LIBOGC_INC) \
+					-I$(PORTLIBS)/include \
+					-I$(PORTLIBS)/include/freetype2 \
+
+#---------------------------------------------------------------------------------
+# build a list of library paths
+#---------------------------------------------------------------------------------
+export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib) \
+					-L$(LIBOGC_LIB)
+					
+#---------------------------------------------------------------------------------
+# a list of source
+#---------------------------------------------------------------------------------
+OBJ_SRC    =fonts/mGba_CnFont_I4.dat.o \
+        lang/ca.lang.o \
+        lang/de.lang.o \
+        lang/en.lang.o \
+        lang/es.lang.o \
+        lang/fr.lang.o \
+        lang/it.lang.o \
+        lang/jp.lang.o \
+        lang/ko.lang.o \
+        lang/nl.lang.o \
+        lang/pt.lang.o \
+        lang/pt_br.lang.o \
+        lang/tr.lang.o \
+        lang/zh.lang.o \
+        src/platform/wii/CnFont/CnFont.o \
+        src/core/bitmap-cache.o \
+        src/core/cache-set.o \
+        src/core/cheats.o \
+        src/core/config.o \
+        src/core/core.o \
+        src/core/directories.o \
+        src/core/input.o \
+        src/core/interface.o \
+        src/core/library.o \
+        src/core/lockstep.o \
+        src/core/log.o \
+        src/core/map-cache.o \
+        src/core/mem-search.o \
+        src/core/rewind.o \
+        src/core/scripting.o \
+        src/core/serialize.o \
+        src/core/sync.o \
+        src/core/thread.o \
+        src/core/tile-cache.o \
+        src/core/timing.o \
+        src/sm83/decoder.o \
+        src/sm83/isa-sm83.o \
+        src/sm83/sm83.o \
+        src/gb/audio.o \
+        src/gb/cheats.o \
+        src/gb/core.o \
+        src/gb/gb.o \
+        src/gb/io.o \
+        src/gb/mbc.o \
+        src/gb/memory.o \
+        src/gb/overrides.o \
+        src/gb/serialize.o \
+        src/gb/renderers/cache-set.o \
+        src/gb/renderers/software.o \
+        src/gb/sio.o \
+        src/gb/timer.o \
+        src/gb/video.o \
+        src/arm/arm.o \
+        src/arm/decoder-arm.o \
+        src/arm/decoder.o \
+        src/arm/decoder-thumb.o \
+        src/arm/isa-arm.o \
+        src/arm/isa-thumb.o \
+        src/gba/audio.o \
+        src/gba/bios.o \
+        src/gba/cheats.o \
+        src/gba/cheats/codebreaker.o \
+        src/gba/cheats/gameshark.o \
+        src/gba/cheats/parv3.o \
+        src/gba/core.o \
+        src/gba/dma.o \
+        src/gba/gba.o \
+        src/gba/hardware.o \
+        src/gba/hle-bios.o \
+        src/gba/input.o \
+        src/gba/io.o \
+        src/gba/matrix.o \
+        src/gba/memory.o \
+        src/gba/overrides.o \
+        src/gba/renderers/cache-set.o \
+        src/gba/renderers/common.o \
+        src/gba/renderers/gl.o \
+        src/gba/renderers/software-bg.o \
+        src/gba/renderers/software-mode0.o \
+        src/gba/renderers/software-obj.o \
+        src/gba/renderers/video-software.o \
+        src/gba/savedata.o \
+        src/gba/serialize.o \
+        src/gba/sharkport.o \
+        src/gba/sio.o \
+        src/gba/timer.o \
+        src/gba/vfame.o \
+        src/gba/video.o \
+        src/util/circle-buffer.o \
+        src/util/configuration.o \
+        src/util/crc32.o \
+        src/util/elf-read.o \
+        src/util/export.o \
+        src/util/formatting.o \
+        src/util/gbk-table.o \
+        src/util/hash.o \
+        src/util/patch.o \
+        src/util/patch-fast.o \
+        src/util/patch-ips.o \
+        src/util/patch-ups.o \
+        src/util/png-io.o \
+        src/util/ring-fifo.o \
+        src/util/string.o \
+        src/util/table.o \
+        src/util/text-codec.o \
+        src/util/vfs.o \
+        src/util/vfs/vfs-mem.o \
+        src/util/vfs/vfs-fifo.o \
+        src/util/vfs/vfs-file.o \
+        src/util/vfs/vfs-dirent.o \
+        src/util/vfs/vfs-devlist.o \
+        src/platform/wii/wii-memory.o \
+        src/third-party/inih/ini.o \
+        src/third-party/blip_buf/blip_buf.o \
+        src/util/vfs/vfs-zip.o \
+        src/third-party/zlib/contrib/minizip/ioapi.o \
+        src/third-party/zlib/contrib/minizip/unzip.o \
+        src/util/vfs/vfs-lzma.o \
+        src/third-party/lzma/7zAlloc.o \
+        src/third-party/lzma/7zArcIn.o \
+        src/third-party/lzma/7zBuf.o \
+        src/third-party/lzma/7zBuf2.o \
+        src/third-party/lzma/7zCrc.o \
+        src/third-party/lzma/7zCrcOpt.o \
+        src/third-party/lzma/7zDec.o \
+        src/third-party/lzma/CpuArch.o \
+        src/third-party/lzma/Delta.o \
+        src/third-party/lzma/LzmaDec.o \
+        src/third-party/lzma/Lzma2Dec.o \
+        src/third-party/lzma/Bra.o \
+        src/third-party/lzma/Bra86.o \
+        src/third-party/lzma/BraIA64.o \
+        src/third-party/lzma/Bcj2.o \
+        src/third-party/lzma/Ppmd7.o \
+        src/third-party/lzma/Ppmd7Dec.o \
+        src/third-party/lzma/7zFile.o \
+        src/third-party/lzma/7zStream.o \
+        src/gba/extra/audio-mixer.o \
+        src/gba/extra/battlechip.o \
+        src/gba/extra/proxy.o \
+        src/gba/rr/mgm.o \
+        src/gba/rr/rr.o \
+        src/gba/rr/vbm.o \
+        src/gb/extra/proxy.o \
+        src/feature/commandline.o \
+        src/feature/thread-proxy.o \
+        src/feature/video-logger.o \
+        src/util/gui.o \
+        src/util/gui/file-select.o \
+        src/util/gui/font.o \
+        src/util/gui/font-metrics.o \
+        src/util/gui/menu.o \
+        src/feature/gui/gui-config.o \
+        src/feature/gui/gui-runner.o \
+        src/feature/gui/remap.o \
+        src/platform/wii/font.o \
+        src/platform/wii/icons.o \
+        src/platform/wii/gui-font.o \
+        src/platform/wii/main.o
+
+
+ALL_OBJ		+= $(OBJ_SRC)
+
+export LD	:=	$(CXX)
+
+all:	$(DOL)
+
+$(ELF):	$(ALL_OBJ)
+	$(LD) $^ $(LDFLAGS) $(LIBPATHS) $(LIBS) -o $@
+	
+$(DOL): $(ELF)
+	elf2dol $(ELF) $(DOL)
+
+ALL_O_FILES = $(foreach dir,./src,$(wildcard $(dir)/*.o))
+ALL_D_FILES = $(foreach dir,/src,$(wildcard $(dir)/*.d))
+
+clean:
+	find ./fonts -name '*.o' -print0 | xargs -0r rm -f
+	find ./fonts -name '*.d' -print0 | xargs -0r rm -f
+	find ./lang -name '*.o' -print0 | xargs -0r rm -f
+	find ./lang -name '*.d' -print0 | xargs -0r rm -f
+	find . -name '*_lang.h' -print0 | xargs -0r rm -f
+	find . -name '*_dat.h' -print0 | xargs -0r rm -f
+	rm -f $(ALL_OBJ)
+	rm -f $(ALL_D_FILES)
+	rm -f $(ELF) $(ELF).map $(DOL) font_tpl.h icons_tpl.h
+
+#---------------------------------------------------------------------------------
+# canned command sequence for binary data
+#---------------------------------------------------------------------------------
+define bin2o
+	bin2s -a 32 $< | $(AS) -o $(@)
+	echo "extern const u8" `(echo $(<F) | sed -e 's/^\([0-9]\)/_\1/' | tr . _)`"_end[];" > `(echo $(<F) | tr . _)`.h
+	echo "extern const u8" `(echo $(<F) | sed -e 's/^\([0-9]\)/_\1/' | tr . _)`"[];" >> `(echo $(<F) | tr . _)`.h
+	echo "extern const u32" `(echo $(<F) | sed -e 's/^\([0-9]\)/_\1/' | tr . _)`_size";" >> `(echo $(<F) | tr . _)`.h
+endef
+
+#---------------------------------------------------------------------------------
+%.o: %.cpp
+	@echo $(notdir $<)
+	@$(CXX) -MMD -MP -MF $*.d $(CXXFLAGS) -c $< -o $@ $(ERROR_FILTER)
+
+#---------------------------------------------------------------------------------
+%.o: %.c
+	@echo $(notdir $<)
+	@$(CC) -MMD -MP -MF $*.d $(CFLAGS) -c $< -o $@ $(ERROR_FILTER)
+
+#---------------------------------------------------------------------------------
+%.o: %.s
+	@echo $(notdir $<)
+	@$(CC) -MMD -MP -MF $*.d -x assembler-with-cpp $(ASFLAGS) -c $< -o $@ $(ERROR_FILTER)
+
+#---------------------------------------------------------------------------------
+%.o: %.S
+	@echo $(notdir $<)
+	@$(CC) -MMD -MP -MF $*.d -x assembler-with-cpp $(ASFLAGS) -c $< -o $@ $(ERROR_FILTER)
+
+#---------------------------------------------------------------------------------
+%.dat.o : %.dat
+	@echo $(notdir $<)
+	$(bin2o)
+
+#---------------------------------------------------------------------------------
+%.lang.o : %.lang
+	@echo $(notdir $<)
+	$(bin2o)
+
+#---------------------------------------------------------------------------------
+%.o : %.tpl
+	@echo $(notdir $<)
+	$(bin2o)
+
+#---------------------------------------------------------------------------------
+%.o : %.ttf
+	@echo $(notdir $<)
+	$(bin2o)
+
+ 

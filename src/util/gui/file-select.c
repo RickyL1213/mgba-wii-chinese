@@ -55,7 +55,10 @@ static bool _refreshDirectory(struct GUIParams* params, const char* currentPath,
 	if (!dir) {
 		return false;
 	}
-	*GUIMenuItemListAppend(currentFiles) = (struct GUIMenuItem) { .title = "(Up)" };
+	// upd xjsxjs197 start
+	//*GUIMenuItemListAppend(currentFiles) = (struct GUIMenuItem) { .title = "(Up)" };
+	*GUIMenuItemListAppend(currentFiles) = (struct GUIMenuItem) { .title = "(上一级目录)" };
+	// upd xjsxjs197 end
 	size_t i = 0;
 	size_t items = 0;
 	struct VDirEntry* de;
@@ -159,7 +162,10 @@ static bool _refreshDirectory(struct GUIParams* params, const char* currentPath,
 
 bool GUISelectFile(struct GUIParams* params, char* outPath, size_t outLen, bool (*filterName)(const char* name), bool (*filterContents)(struct VFile*), const char* preselect) {
 	struct GUIMenu menu = {
-		.title = "Select file",
+	    // upd xjsxjs197 start
+		//.title = "Select file",
+		.title = "选择游戏",
+		// upd xjsxjs197 end
 		.subtitle = params->currentPath,
 	};
 	GUIMenuItemListInit(&menu.items, 0);

@@ -9,18 +9,21 @@
 #include <mgba-util/gui/menu.h>
 
 void mGUIRemapKeys(struct GUIParams* params, struct mInputMap* map, const struct GUIInputKeys* keys) {
+    // add xjsxjs197 start
 	struct GUIMenu menu = {
-		.title = "Remap keys",
+		//.title = "Remap keys",
+		.title = "重新映射按键",
 		.index = 0,
 		.background = 0
 	};
 	GUIMenuItemListInit(&menu.items, 0);
 	const char* keyNames[keys->nKeys + 1];
 	memcpy(&keyNames[1], keys->keyNames, keys->nKeys * sizeof(keyNames[0]));
-	keyNames[0] = "Unmapped";
+	//keyNames[0] = "Unmapped";
+	keyNames[0] = "未设定";
 	size_t i;
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Game keys:",
+		.title = "游戏按键：",
 		.readonly = true,
 	};
 	for (i = 0; i < map->info->nKeys; ++i) {
@@ -34,7 +37,7 @@ void mGUIRemapKeys(struct GUIParams* params, struct mInputMap* map, const struct
 		};
 	}
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Interface keys:",
+		.title = "界面按键:",
 		.readonly = true,
 	};
 	for (i = 0; i < params->keyMap.info->nKeys; ++i) {
@@ -51,13 +54,14 @@ void mGUIRemapKeys(struct GUIParams* params, struct mInputMap* map, const struct
 		};
 	}
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Save",
+		.title = "保存",
 		.data = GUI_V_I(-2),
 	};
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Cancel",
+		.title = "取消",
 		.data = GUI_V_I(-1),
 	};
+	// add xjsxjs197 end
 
 	struct GUIMenuItem* item;
 	while (true) {

@@ -7,6 +7,12 @@
 
 #include <mgba-util/string.h>
 
+// add by xjsxjs197 start
+extern void DrawCnChar(int x, int y, uint32_t color, uint16_t glyph);
+extern int GetCharHeight(uint16_t glyph);
+extern int GetCharWidth(uint16_t glyph);
+// add by xjsxjs197 end
+
 unsigned GUIFontSpanWidth(const struct GUIFont* font, const char* text) {
 	size_t len = strlen(text);
 	return GUIFontSpanCountWidth(font, text, len);
@@ -24,7 +30,10 @@ unsigned GUIFontSpanCountWidth(const struct GUIFont* font, const char* text, siz
 				width += w;
 			}
 		} else {
-			width += GUIFontGlyphWidth(font, c);
+		    // upd by xjsxjs197 start
+			//width += GUIFontGlyphWidth(font, c);
+			width += GetCharWidth((uint16_t)c) + 1;
+			// upd by xjsxjs197 end
 		}
 	}
 	return width;
@@ -80,8 +89,12 @@ void GUIFontPrint(struct GUIFont* font, int x, int y, enum GUIAlignment align, u
 			icon = true;
 			break;
 		default:
-			GUIFontDrawGlyph(font, x, y, color, c);
-			x += GUIFontGlyphWidth(font, c);
+			// upd by xjsxjs197 start
+			//GUIFontDrawGlyph(font, x, y, color, c);
+			//x += GUIFontGlyphWidth(font, c);
+			DrawCnChar(x, y, color, (uint16_t)c);
+			x += GetCharWidth((uint16_t)c) + 1;
+			// upd by xjsxjs197 end
 			break;
 		}
 

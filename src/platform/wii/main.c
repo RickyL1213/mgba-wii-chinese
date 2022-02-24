@@ -359,9 +359,11 @@ int main(int argc, char* argv[]) {
 			_guiPrepare, 0,
 			_keyboardRun,
 		},
+		// upd xjsxjs197 start
 		.keySources = (struct GUIInputKeys[]) {
 			{
-				.name = "GameCube Input (1)",
+				//.name = "GameCube Input (1)",
+				.name = "GameCube手柄 1",
 				.id = GCN1_INPUT,
 				.keyNames = (const char*[]) {
 					"D-Pad Left",
@@ -381,7 +383,8 @@ int main(int argc, char* argv[]) {
 				.nKeys = 13
 			},
 			{
-				.name = "GameCube Input (2)",
+				//.name = "GameCube Input (2)",
+				.name = "GameCube手柄 2",
 				.id = GCN2_INPUT,
 				.keyNames = (const char*[]) {
 					"D-Pad Left",
@@ -401,7 +404,8 @@ int main(int argc, char* argv[]) {
 				.nKeys = 13
 			},
 			{
-				.name = "Wii Remote Input",
+				//.name = "Wii Remote Input",
+				.name = "Wii右手柄",
 				.id = WIIMOTE_INPUT,
 				.keyNames = (const char*[]) {
 					"2",
@@ -426,7 +430,8 @@ int main(int argc, char* argv[]) {
 				.nKeys = 18
 			},
 			{
-				.name = "Classic Controller Input",
+				//.name = "Classic Controller Input",
+				.name = "经典手柄",
 				.id = CLASSIC_INPUT,
 				.keyNames = (const char*[]) {
 					0,
@@ -493,12 +498,13 @@ int main(int argc, char* argv[]) {
 		},
 		.configExtra = (struct GUIMenuItem[]) {
 			{
-				.title = "Video mode",
+				.title = "视频模式",
 				.data = GUI_V_S("videoMode"),
 				.submenu = 0,
 				.state = 0,
 				.validStates = (const char*[]) {
-					"Autodetect (recommended)",
+					//"Autodetect (recommended)",
+					"自动检测 (推荐)",
 					"480i",
 					"480p",
 					"240p",
@@ -506,25 +512,30 @@ int main(int argc, char* argv[]) {
 				.nStates = 4
 			},
 			{
-				.title = "Screen mode",
+				.title = "显示模式",
 				.data = GUI_V_S("screenMode"),
 				.submenu = 0,
 				.state = 0,
 				.validStates = (const char*[]) {
-					"Pixel-Accurate",
-					"Stretched",
+					//"Pixel-Accurate",
+					//"Stretched",
+					"精确的像素对应",
+					"拉伸",
 				},
 				.nStates = 2
 			},
 			{
-				.title = "Filtering",
+				.title = "过滤器",
 				.data = GUI_V_S("filter"),
 				.submenu = 0,
 				.state = 0,
 				.validStates = (const char*[]) {
-					"Pixelated",
-					"Bilinear (smoother)",
-					"Bilinear (pixelated)",
+					//"Pixelated",
+					//"Bilinear (smoother)",
+					//"Bilinear (pixelated)",
+					"像素化",
+					"双线性过滤 (平滑)",
+					"双线性过滤 (像素化)",
 				},
 				.nStates = 3
 			},
@@ -569,7 +580,7 @@ int main(int argc, char* argv[]) {
 				.nStates = 8
 			},
 			{
-				.title = "Gyroscope sensitivity",
+				.title = "陀螺仪灵敏度",
 				.data = GUI_V_S("gyroSensitivity"),
 				.submenu = 0,
 				.state = 0,
@@ -586,6 +597,7 @@ int main(int argc, char* argv[]) {
 				},
 				.nStates = 6
 			},
+			// upd xjsxjs197 end
 		},
 		.nConfigExtra = 6,
 		.setup = _setup,

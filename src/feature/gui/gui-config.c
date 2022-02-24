@@ -41,15 +41,18 @@ static bool _biosNamed(const char* name) {
 }
 
 void mGUIShowConfig(struct mGUIRunner* runner, struct GUIMenuItem* extra, size_t nExtra) {
+    // upd xjsxjs197 start
 	struct GUIMenu menu = {
-		.title = "Configure",
+		//.title = "Configure",
+		.title = "各种设定",
 		.index = 0,
 		.background = &runner->background.d
 	};
 	size_t i;
 	GUIMenuItemListInit(&menu.items, 0);
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Frameskip",
+		//.title = "Frameskip",
+		.title = "跳帧",
 		.data = GUI_V_S("frameskip"),
 		.submenu = 0,
 		.state = 0,
@@ -59,17 +62,19 @@ void mGUIShowConfig(struct mGUIRunner* runner, struct GUIMenuItem* extra, size_t
 		.nStates = 10
 	};
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Show framerate",
+		//.title = "Show framerate",
+		.title = "显示帧数",
 		.data = GUI_V_S("fpsCounter"),
 		.submenu = 0,
 		.state = false,
 		.validStates = (const char*[]) {
-			"Off", "On"
+			//"Off", "On"
+			"关闭", "打开"
 		},
 		.nStates = 2
 	};
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Show status OSD",
+		.title = "显示OSD",
 		.data = GUI_V_S("showOSD"),
 		.submenu = 0,
 		.state = true,
@@ -79,27 +84,30 @@ void mGUIShowConfig(struct mGUIRunner* runner, struct GUIMenuItem* extra, size_t
 		.nStates = 2
 	};
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Autosave state",
+		.title = "自动保存状态",
 		.data = GUI_V_S("autosave"),
 		.submenu = 0,
 		.state = true,
 		.validStates = (const char*[]) {
-			"Off", "On"
+			//"Off", "On"
+			"关闭", "打开"
 		},
 		.nStates = 2
 	};
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Autoload state",
+		//.title = "Autoload state",
+		.title = "自动读取状态",
 		.data = GUI_V_S("autoload"),
 		.submenu = 0,
 		.state = true,
 		.validStates = (const char*[]) {
-			"Off", "On"
+			//"Off", "On"
+			"关闭", "打开"
 		},
 		.nStates = 2
 	};
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Mute",
+		.title = "静音",
 		.data = GUI_V_S("mute"),
 		.submenu = 0,
 		.state = false,
@@ -109,7 +117,7 @@ void mGUIShowConfig(struct mGUIRunner* runner, struct GUIMenuItem* extra, size_t
 		.nStates = 2
 	};
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Fast forward mute",
+		.title = "快进静音",
 		.data = GUI_V_S("fastForwardMute"),
 		.submenu = 0,
 		.state = false,
@@ -119,37 +127,38 @@ void mGUIShowConfig(struct mGUIRunner* runner, struct GUIMenuItem* extra, size_t
 		.nStates = 2
 	};
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Use BIOS if found",
+		.title = "如果BIOS存在就使用",
 		.data = GUI_V_S("useBios"),
 		.submenu = 0,
 		.state = true,
 		.validStates = (const char*[]) {
-			"Off", "On"
+			//"Off", "On"
+			"关闭", "打开"
 		},
 		.nStates = 2
 	};
 #ifdef M_CORE_GBA
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Select GBA BIOS path",
+		.title = "选择GBA BIOS路径",
 		.data = GUI_V_S("gba.bios"),
 	};
 #endif
 #ifdef M_CORE_GB
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Select GB BIOS path",
+		.title = "选择GB BIOS路径",
 		.data = GUI_V_S("gb.bios"),
 	};
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Select GBC BIOS path",
+		.title = "选择GBC BIOS路径",
 		.data = GUI_V_S("gbc.bios"),
 	};
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Select SGB BIOS path",
+		.title = "选择SGB BIOS路径",
 		.data = GUI_V_S("sgb.bios"),
 	};
 	struct GUIMenuItem* palette = GUIMenuItemListAppend(&menu.items);
 	*palette = (struct GUIMenuItem) {
-		.title = "GB palette",
+		.title = "GB调色板",
 		.data = GUI_V_S("gb.pal"),
 	};
 	const struct GBColorPreset* colorPresets;
@@ -172,7 +181,7 @@ void mGUIShowConfig(struct mGUIRunner* runner, struct GUIMenuItem* extra, size_t
 	};
 #if defined(M_CORE_GBA) && (defined(GEKKO) || defined(__SWITCH__) || defined(PSP2))
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Enable GBP features",
+		.title = "打开GBP功能",
 		.data = GUI_V_S("gba.forceGbp"),
 		.submenu = 0,
 		.state = false,
@@ -184,7 +193,7 @@ void mGUIShowConfig(struct mGUIRunner* runner, struct GUIMenuItem* extra, size_t
 #endif
 #ifdef M_CORE_GB
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Enable SGB features",
+		.title = "打开SGB功能",
 		.data = GUI_V_S("sgb.model"),
 		.submenu = 0,
 		.state = true,
@@ -198,7 +207,7 @@ void mGUIShowConfig(struct mGUIRunner* runner, struct GUIMenuItem* extra, size_t
 		.nStates = 2
 	};
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Enable SGB borders",
+		.title = "打开SGB边框",
 		.data = GUI_V_S("sgb.borders"),
 		.submenu = 0,
 		.state = true,
@@ -208,7 +217,7 @@ void mGUIShowConfig(struct mGUIRunner* runner, struct GUIMenuItem* extra, size_t
 		.nStates = 2
 	};
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Crop SGB borders",
+		.title = "裁掉SGB边框",
 		.data = GUI_V_S("sgb.borderCrop"),
 		.submenu = 0,
 		.state = false,
@@ -228,7 +237,7 @@ void mGUIShowConfig(struct mGUIRunner* runner, struct GUIMenuItem* extra, size_t
 			i = 0;
 		}
 		*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-			.title = "Remap controls",
+			.title = "重新映射控制器",
 			.data = GUI_V_U(CONFIG_REMAP),
 			.state = 0,
 			.validStates = i ? mapNames : 0,
@@ -239,13 +248,14 @@ void mGUIShowConfig(struct mGUIRunner* runner, struct GUIMenuItem* extra, size_t
 		*GUIMenuItemListAppend(&menu.items) = extra[i];
 	}
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Save",
+		.title = "保存",
 		.data = GUI_V_U(CONFIG_SAVE),
 	};
 	*GUIMenuItemListAppend(&menu.items) = (struct GUIMenuItem) {
-		.title = "Cancel",
+		.title = "取消",
 		.data = GUI_V_V,
 	};
+	// upd xjsxjs197 end
 	enum GUIMenuExitReason reason;
 	char gbaBiosPath[256] = "";
 #ifdef M_CORE_GB
@@ -295,7 +305,7 @@ void mGUIShowConfig(struct mGUIRunner* runner, struct GUIMenuItem* extra, size_t
 						test.v.s = mCoreConfigGetValue(&runner->config, item->data.v.s);
 						if (test.v.s && strcmp(test.v.s, v->v.s) == 0) {
 							item->state = j;
-							break;						
+							break;
 						}
 						break;
 					case GUI_VARIANT_POINTER:

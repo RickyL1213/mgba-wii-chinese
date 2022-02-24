@@ -5,13 +5,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 #include <mgba-util/gui/font.h>
 #include <mgba-util/gui/font-metrics.h>
-#include "icons.h"
-#include "font.h"
+
+// add by xjsxjs197 start
+typedef uint8_t u8;					///< 8bit unsigned integer
+typedef uint16_t u16;				///< 16bit unsigned integer
+typedef uint32_t u32;				///< 32bit unsigned integer
+// add by xjsxjs197 end
+
+#include "icons_tpl.h"
+#include "font_tpl.h"
 
 #include <malloc.h>
 #include <ogc/tpl.h>
 
-#define GLYPH_HEIGHT 24
+// add by xjsxjs197 start
+extern void InitCnFont();
+extern void DestroyCnFont();
+extern int GetCharHeight(uint16_t glyph);
+extern int GetCharWidth(uint16_t glyph);
+// add by xjsxjs197 end
+
+// upd by xjsxjs197 start
+//#define GLYPH_HEIGHT 24
+#define GLYPH_HEIGHT 30
+// upd by xjsxjs197 end
 #define CELL_HEIGHT 32
 #define CELL_WIDTH 32
 
@@ -21,32 +38,42 @@ struct GUIFont {
 };
 
 struct GUIFont* GUIFontCreate(void) {
+    // add by xjsxjs197 start
+    InitCnFont();
+    // add by xjsxjs197 end
+
 	struct GUIFont* guiFont = malloc(sizeof(struct GUIFont));
 	if (!guiFont) {
 		return 0;
 	}
 
 	// libogc's TPL code modifies and frees this itself...
-	void* fontTpl = memalign(32, font_size);
+	// upd by xjsxjs197 start
+	void* fontTpl = memalign(32, font_tpl_size);
 	if (!fontTpl) {
 		free(guiFont);
 		return 0;
 	}
-	memcpy(fontTpl, font, font_size);
-	TPL_OpenTPLFromMemory(&guiFont->tdf, fontTpl, font_size);
+	memcpy(fontTpl, font_tpl, font_tpl_size);
+	TPL_OpenTPLFromMemory(&guiFont->tdf, fontTpl, font_tpl_size);
 
-	void* iconsTpl = memalign(32, icons_size);
+	void* iconsTpl = memalign(32, icons_tpl_size);
 	if (!iconsTpl) {
 		TPL_CloseTPLFile(&guiFont->tdf);
 		free(guiFont);
 		return 0;
 	}
-	memcpy(iconsTpl, icons, icons_size);
-	TPL_OpenTPLFromMemory(&guiFont->iconsTdf, iconsTpl, icons_size);
+	memcpy(iconsTpl, icons_tpl, icons_tpl_size);
+	TPL_OpenTPLFromMemory(&guiFont->iconsTdf, iconsTpl, icons_tpl_size);
+	// upd by xjsxjs197 end
 	return guiFont;
 }
 
 void GUIFontDestroy(struct GUIFont* font) {
+    // add by xjsxjs197 start
+    DestroyCnFont();
+    // add by xjsxjs197 end
+
 	TPL_CloseTPLFile(&font->tdf);
 	TPL_CloseTPLFile(&font->iconsTdf);
 	free(font);
@@ -54,15 +81,21 @@ void GUIFontDestroy(struct GUIFont* font) {
 
 unsigned GUIFontHeight(const struct GUIFont* font) {
 	UNUSED(font);
-	return GLYPH_HEIGHT;
+	// upd by xjsxjs197 start
+	//return GLYPH_HEIGHT;
+	return GetCharHeight(0) + 2;
+	// upd by xjsxjs197 end
 }
 
 unsigned GUIFontGlyphWidth(const struct GUIFont* font, uint32_t glyph) {
 	UNUSED(font);
-	if (glyph > 0x7F) {
+	// upd by xjsxjs197 start
+	/*if (glyph > 0x7F) {
 		glyph = '?';
 	}
-	return defaultFontMetrics[glyph].width * 2;
+	return defaultFontMetrics[glyph].width * 2;*/
+	return GetCharWidth((uint16_t)glyph);
+	// upd by xjsxjs197 end
 }
 
 void GUIFontIconMetrics(const struct GUIFont* font, enum GUIIcon icon, unsigned* w, unsigned* h) {
