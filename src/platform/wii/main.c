@@ -519,7 +519,7 @@ int main(int argc, char* argv[]) {
 				.validStates = (const char*[]) {
 					//"Pixel-Accurate",
 					//"Stretched",
-					"精确的像素对应",
+					"点对点",
 					"拉伸",
 				},
 				.nStates = 2
@@ -540,7 +540,7 @@ int main(int argc, char* argv[]) {
 				.nStates = 3
 			},
 			{
-				.title = "Horizontal stretch",
+				.title = "横拉伸",
 				.data = GUI_V_S("stretchWidth"),
 				.submenu = 0,
 				.state = 7,
@@ -560,7 +560,7 @@ int main(int argc, char* argv[]) {
 				.nStates = 8
 			},
 			{
-				.title = "Vertical stretch",
+				.title = "纵拉伸",
 				.data = GUI_V_S("stretchHeight"),
 				.submenu = 0,
 				.state = 6,

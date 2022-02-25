@@ -103,7 +103,7 @@ enum GUIMenuExitReason GUIShowMenu(struct GUIParams* params, struct GUIMenu* men
 
 static enum GUIMenuExitReason GUIMenuPollInput(struct GUIParams* params, struct GUIMenu* menu, struct GUIMenuState* state) {
 	size_t lineHeight = GUIFontHeight(params->font);
-	size_t pageSize = params->height / lineHeight;
+	size_t pageSize = (params->height - 10) / lineHeight;
 	if (pageSize > 4) {
 		pageSize -= 4;
 	} else {
@@ -158,12 +158,12 @@ static enum GUIMenuExitReason GUIMenuPollInput(struct GUIParams* params, struct 
 		} else if (state->cursor == GUI_CURSOR_DOWN || state->cursor == GUI_CURSOR_DRAGGING) {
 			if (cy <= 2 * lineHeight && cy > lineHeight && menu->index > 0) {
 				--menu->index;
-			} else if (cy <= params->height && cy > params->height - lineHeight && menu->index < GUIMenuItemListSize(&menu->items) - 1) {
+			} else if (cy <= (params->height - 10) && cy > (params->height - 10) - lineHeight && menu->index < GUIMenuItemListSize(&menu->items) - 1) {
 				++menu->index;
-			} else if (cy <= params->height - lineHeight && cy > 2 * lineHeight) {
+			} else if (cy <= (params->height - 10) - lineHeight && cy > 2 * lineHeight) {
 				size_t location = cy - 2 * lineHeight;
 				location *= GUIMenuItemListSize(&menu->items) - 1;
-				menu->index = location / (params->height - 3 * lineHeight);
+				menu->index = location / ((params->height - 10) - 3 * lineHeight);
 			}
 		}
 	}
@@ -173,7 +173,7 @@ static enum GUIMenuExitReason GUIMenuPollInput(struct GUIParams* params, struct 
 		state->start = menu->index;
 	}
 	// Move the view down if the active item is after the bottom of the view
-	while ((menu->index - state->start + 4) * lineHeight > params->height) {
+	while ((menu->index - state->start + 4) * lineHeight > (params->height - 10)) {
 		// TODO: Should this loop be replaced with division?
 		++state->start;
 	}
@@ -211,6 +211,9 @@ static enum GUIMenuExitReason GUIMenuPollInput(struct GUIParams* params, struct 
 }
 
 static void GUIMenuDraw(struct GUIParams* params, const struct GUIMenu* menu, const struct GUIMenuState* state) {
+	// shift text right by 50 becasue of CRT overscan
+	int overscan = 50;
+
 	size_t lineHeight = GUIFontHeight(params->font);
 	params->drawStart();
 	if (menu->background) {
@@ -220,14 +223,14 @@ static void GUIMenuDraw(struct GUIParams* params, const struct GUIMenu* menu, co
 		params->guiPrepare();
 	}
 	unsigned y = lineHeight;
-	GUIFontPrint(params->font, 0, y, GUI_ALIGN_LEFT, 0xFFFFFFFF, menu->title);
+	GUIFontPrint(params->font,  overscan + 0, y, GUI_ALIGN_LEFT, 0xFFFFFFFF, menu->title);
 	if (menu->subtitle) {
-		GUIFontPrint(params->font, 0, y * 2, GUI_ALIGN_LEFT, 0xFFFFFFFF, menu->subtitle);
+		GUIFontPrint(params->font, overscan + 0, y * 2, GUI_ALIGN_LEFT, 0xFFFFFFFF, menu->subtitle);
 	}
 	y += 2 * lineHeight;
 	unsigned right;
 	GUIFontIconMetrics(params->font, GUI_ICON_SCROLLBAR_BUTTON, &right, 0);
-	size_t itemsPerScreen = (params->height - y) / lineHeight;
+	size_t itemsPerScreen = ((params->height - 10) - y) / lineHeight;
 	size_t i;
 	for (i = state->start; i < GUIMenuItemListSize(&menu->items); ++i) {
 		int color = 0xE0A0A0A0;
@@ -236,31 +239,31 @@ static void GUIMenuDraw(struct GUIParams* params, const struct GUIMenu* menu, co
 			color = item->readonly ? 0xD0909090 : 0xFFFFFFFF;
 			// upd xjsxjs197 start
 			//GUIFontDrawIcon(params->font, lineHeight * 0.8f, y, GUI_ALIGN_BOTTOM | GUI_ALIGN_RIGHT, GUI_ORIENT_0, color, GUI_ICON_POINTER);
-			GUIFontDrawIcon(params->font, lineHeight * 0.8f, y + 7, GUI_ALIGN_RIGHT, GUI_ORIENT_0, 0xFFFFFFFF, GUI_ICON_POINTER);
+			GUIFontDrawIcon(params->font, overscan + lineHeight * 0.8f, y + 7, GUI_ALIGN_RIGHT, GUI_ORIENT_0, 0xFFFFFFFF, GUI_ICON_POINTER);
 			// upd xjsxjs197 end
 		}
-		GUIFontPrint(params->font, item->readonly ? lineHeight * 3 / 2 : lineHeight, y, GUI_ALIGN_LEFT, color, item->title);
+		GUIFontPrint(params->font,  overscan + (item->readonly ? lineHeight * 3 / 2 : lineHeight), y, GUI_ALIGN_LEFT, color, item->title);
 		if (item->validStates && item->validStates[item->state]) {
-			GUIFontPrintf(params->font, params->width - right - 8, y, GUI_ALIGN_RIGHT, color, "%s ", item->validStates[item->state]);
+			GUIFontPrintf(params->font, params->width - right - 8 - overscan, y, GUI_ALIGN_RIGHT, color, "%s ", item->validStates[item->state]);
 		}
 		y += lineHeight;
-		if (y + lineHeight > params->height) {
+		if (y + lineHeight > (params->height - 10)) {
 			break;
 		}
 	}
 
 	if (itemsPerScreen < GUIMenuItemListSize(&menu->items)) {
 		size_t top = 2 * lineHeight;
-		size_t bottom = params->height - 8;
+		size_t bottom = (params->height - 40) - 8;
 		unsigned w;
 		GUIFontIconMetrics(params->font, GUI_ICON_SCROLLBAR_TRACK, &w, 0);
 		right = (right - w) / 2;
-		GUIFontDrawIconSize(params->font, params->width - right - 8, top, 0, bottom - top, 0xA0FFFFFF, GUI_ICON_SCROLLBAR_TRACK);
-		GUIFontDrawIcon(params->font, params->width - 8, top, GUI_ALIGN_HCENTER | GUI_ALIGN_BOTTOM, GUI_ORIENT_VMIRROR, 0xFFFFFFFF, GUI_ICON_SCROLLBAR_BUTTON);
-		GUIFontDrawIcon(params->font, params->width - 8, bottom, GUI_ALIGN_HCENTER | GUI_ALIGN_TOP, GUI_ORIENT_0, 0xFFFFFFFF, GUI_ICON_SCROLLBAR_BUTTON);
+		GUIFontDrawIconSize(params->font, params->width - right - 8 - overscan, top, 0, bottom - top, 0xA0FFFFFF, GUI_ICON_SCROLLBAR_TRACK);
+		GUIFontDrawIcon(params->font, params->width - 8 - overscan, top, GUI_ALIGN_HCENTER | GUI_ALIGN_BOTTOM, GUI_ORIENT_VMIRROR, 0xFFFFFFFF, GUI_ICON_SCROLLBAR_BUTTON);
+		GUIFontDrawIcon(params->font, params->width - 8 - overscan, bottom, GUI_ALIGN_HCENTER | GUI_ALIGN_TOP, GUI_ORIENT_0, 0xFFFFFFFF, GUI_ICON_SCROLLBAR_BUTTON);
 
 		y = menu->index * (bottom - top - 16) / GUIMenuItemListSize(&menu->items);
-		GUIFontDrawIcon(params->font, params->width - 8, top + y, GUI_ALIGN_HCENTER | GUI_ALIGN_TOP, GUI_ORIENT_0, 0xFFFFFFFF, GUI_ICON_SCROLLBAR_THUMB);
+		GUIFontDrawIcon(params->font, params->width - 8 - overscan, top + y, GUI_ALIGN_HCENTER | GUI_ALIGN_TOP, GUI_ORIENT_0, 0xFFFFFFFF, GUI_ICON_SCROLLBAR_THUMB);
 	}
 
 	GUIDrawBattery(params);
@@ -303,7 +306,7 @@ enum GUIMenuExitReason GUIShowMessageBox(struct GUIParams* params, int buttons, 
 		if (params->guiPrepare) {
 			params->guiPrepare();
 		}
-		GUIFontPrint(params->font, params->width / 2, (GUIFontHeight(params->font) + params->height) / 2, GUI_ALIGN_HCENTER, 0xFFFFFFFF, message);
+		GUIFontPrint(params->font, params->width / 2, (GUIFontHeight(params->font) + (params->height - 10)) / 2, GUI_ALIGN_HCENTER, 0xFFFFFFFF, message);
 		if (params->guiFinish) {
 			params->guiFinish();
 		}
