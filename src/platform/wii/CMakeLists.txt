@@ -1,6 +1,7 @@
 find_program(ELF2DOL elf2dol)
 find_program(GXTEXCONV gxtexconv)
 find_program(RAW2C raw2c)
+find_program(BIN2S bin2s)
 find_program(WIILOAD wiiload)
 
 find_library(WIIDRC_LIBRARY wiidrc)
@@ -9,7 +10,7 @@ if(WIIDRC_LIBRARY)
 endif()
 
 set(OS_DEFINES _GNU_SOURCE COLOR_16_BIT COLOR_5_6_5 USE_VFS_FILE IOAPI_NO_64 FIXED_ROM_BUFFER)
-list(APPEND CORE_VFS_SRC ${CMAKE_SOURCE_DIR}/src/util/vfs/vfs-file.c ${CMAKE_SOURCE_DIR}/src/util/vfs/vfs-dirent.c ${CMAKE_SOURCE_DIR}/src/util/vfs/vfs-devlist.c)
+list(APPEND CORE_VFS_SRC ${CMAKE_SOURCE_DIR}/src/util/vfs/vfs-file.c ${CMAKE_SOURCE_DIR}/src/util/vfs/vfs-dirent.c ${CMAKE_SOURCE_DIR}/src/util/vfs/vfs-devlist.c )
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
@@ -19,9 +20,18 @@ source_group("Wii-specific code" FILES ${OS_SRC})
 set(CORE_VFS_SRC ${CORE_VFS_SRC} PARENT_SCOPE)
 set(OS_DEFINES ${OS_DEFINES} PARENT_SCOPE)
 
-list(APPEND GUI_SRC ${CMAKE_CURRENT_BINARY_DIR}/font.c ${CMAKE_CURRENT_BINARY_DIR}/icons.c ${CMAKE_CURRENT_SOURCE_DIR}/gui-font.c)
+list(APPEND GUI_SRC
+    ${CMAKE_CURRENT_BINARY_DIR}/font.c
+    ${CMAKE_CURRENT_BINARY_DIR}/icons.c
+    ${CMAKE_CURRENT_BINARY_DIR}/mGba_CnFont_I4.c
+    ${CMAKE_CURRENT_BINARY_DIR}/mGba_CnFont_I4.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/CnFont/CnFont.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui-font.c
+    )
 
 set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/font.c PROPERTIES GENERATED ON)
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/mGba_CnFont_I4.c PROPERTIES GENERATED ON)
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/mGba_CnFont_I4.h PROPERTIES GENERATED ON)
 add_executable(${BINARY_NAME}.elf ${GUI_SRC} main.c)
 set_target_properties(${BINARY_NAME}.elf PROPERTIES COMPILE_DEFINITIONS "${OS_DEFINES};${FEATURE_DEFINES};${FUNCTION_DEFINES}")
 target_link_libraries(${BINARY_NAME}.elf ${BINARY_NAME} ${OS_LIB})
@@ -47,6 +57,15 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/icons.tpl
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/icons.c
                    COMMAND ${RAW2C} ${CMAKE_CURRENT_BINARY_DIR}/icons.tpl
                    MAIN_DEPENDENCY  ${CMAKE_CURRENT_BINARY_DIR}/icons.tpl
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/mGba_CnFont_I4.h
+                   COMMAND ${BIN2S} -a 32 ${CMAKE_SOURCE_DIR}/fonts/mGba_CnFont_I4.dat  -H ${CMAKE_CURRENT_BINARY_DIR}/mGba_CnFont_I4.h > /dev/null 2>&1
+                   MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/fonts/ mGba_CnFont_I4.dat
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/mGba_CnFont_I4.c
+                   COMMAND ${RAW2C} ${CMAKE_SOURCE_DIR}/fonts/mGba_CnFont_I4.dat
+                   MAIN_DEPENDENCY  ${CMAKE_SOURCE_DIR}/fonts/mGba_CnFont_I4.dat
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 add_custom_target(${BINARY_NAME}.dol ALL

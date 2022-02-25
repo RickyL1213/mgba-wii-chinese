@@ -39,10 +39,6 @@
 
 #define SECTION_NAME_MAX 128
 
-// add xjsxjs197 start
-const char* const projectName = "mGbaWii";
-// add xjsxjs197 end
-
 struct mCoreConfigEnumerateData {
 	void (*handler)(const char* key, const char* value, enum mCoreConfigLevel type, void* user);
 	const char* prefix;

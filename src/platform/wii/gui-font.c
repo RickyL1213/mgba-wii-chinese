@@ -12,8 +12,8 @@ typedef uint16_t u16;				///< 16bit unsigned integer
 typedef uint32_t u32;				///< 32bit unsigned integer
 // add by xjsxjs197 end
 
-#include "icons_tpl.h"
-#include "font_tpl.h"
+#include "icons.h"
+#include "font.h"
 
 #include <malloc.h>
 #include <ogc/tpl.h>
@@ -49,22 +49,22 @@ struct GUIFont* GUIFontCreate(void) {
 
 	// libogc's TPL code modifies and frees this itself...
 	// upd by xjsxjs197 start
-	void* fontTpl = memalign(32, font_tpl_size);
+	void* fontTpl = memalign(32, font_size);
 	if (!fontTpl) {
 		free(guiFont);
 		return 0;
 	}
-	memcpy(fontTpl, font_tpl, font_tpl_size);
-	TPL_OpenTPLFromMemory(&guiFont->tdf, fontTpl, font_tpl_size);
+	memcpy(fontTpl, font, font_size);
+	TPL_OpenTPLFromMemory(&guiFont->tdf, fontTpl, font_size);
 
-	void* iconsTpl = memalign(32, icons_tpl_size);
+	void* iconsTpl = memalign(32, icons_size);
 	if (!iconsTpl) {
 		TPL_CloseTPLFile(&guiFont->tdf);
 		free(guiFont);
 		return 0;
 	}
-	memcpy(iconsTpl, icons_tpl, icons_tpl_size);
-	TPL_OpenTPLFromMemory(&guiFont->iconsTdf, iconsTpl, icons_tpl_size);
+	memcpy(iconsTpl, icons, icons_size);
+	TPL_OpenTPLFromMemory(&guiFont->iconsTdf, iconsTpl, icons_size);
 	// upd by xjsxjs197 end
 	return guiFont;
 }

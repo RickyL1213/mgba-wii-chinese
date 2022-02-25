@@ -10,7 +10,10 @@
 #include <fat.h>
 #include <malloc.h>
 
-#include "mGba_CnFont_I4_dat.h"
+extern "C" {
+  #include "mGba_CnFont_I4.h"
+}
+
 #include "CnFont.h"
 
 #define CH_FONT_HEIGHT 32
@@ -27,11 +30,11 @@ static std::map<uint16_t, u8*> charImgBufMap;
 * 初始化
 */
 void InitCnFont() {
-	int searchLen = (int)(mGba_CnFont_I4_dat_size / (CHAR_IMG_SIZE + 32));
+	int searchLen = (int)(mGba_CnFont_I4_size / (CHAR_IMG_SIZE + 32));
 	int bufIndex = 0;
 	int skipSetp = (CHAR_IMG_SIZE + 32) / 2;
 
-	uint16_t *zhFontBufTemp = (uint16_t *)mGba_CnFont_I4_dat;
+	uint16_t *zhFontBufTemp = (uint16_t *)mGba_CnFont_I4;
     while (bufIndex < searchLen)
     {
         charWidthMap.insert(std::pair<uint16_t, int>(*zhFontBufTemp, *((u8*)(zhFontBufTemp + 1) + 1)));
