@@ -41,6 +41,7 @@ Other fixes:
  - FFmpeg: Fix GIF recording (fixes mgba.io/i/2393)
  - GB: Fix temporary saves
  - GB, GBA: Save writeback-pending masked saves on unload (fixes mgba.io/i/2396)
+ - mGUI: Fix FPS counter after closing menu
  - VFS: Failed file mapping should return NULL on POSIX
 Misc:
  - Core: Suspend runloop when a core crashes
@@ -52,6 +53,7 @@ Misc:
  - GBA DMA: Enhanced logging (closes mgba.io/i/2454)
  - GBA Video: Implement layer placement for OpenGL renderer (fixes mgba.io/i/1962)
  - mGUI: Add margin to right-aligned menu text (fixes mgba.io/i/871)
+ - mGUI: Autosave less frequently when fast-forwarding
  - Qt: Rearrange menus some
  - Qt: Clean up cheats dialog
  - Qt: Only set default controller bindings if loading fails (fixes mgba.io/i/799)
